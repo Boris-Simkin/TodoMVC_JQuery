@@ -197,12 +197,29 @@ jQuery(function ($) {
 			this.todos.splice(this.getIndexFromEl(e.target), 1);
 			this.render();
 		},
+		switchTodoByIndex: function (firstIndex, secondIndex) {
+			var templateTodo = $.extend({}, this.todos[firstIndex]);
+			this.todos[firstIndex] = this.todos[secondIndex];
+			this.todos[secondIndex] = templateTodo;
+		},
 		up: function (e) {
-			console.log('up button pressed');
+			var currentIndex = this.getIndexFromEl(e.target);
+			if (this.todos[currentIndex - 1] == null)
+					return;
+			// var templateTodo = $.extend({}, this.todos[currentIndex]);
+			// this.todos[currentIndex] = this.todos[currentIndex - 1];
+			// this.todos[currentIndex - 1] = templateTodo;
+			this.switchTodoByIndex(currentIndex, currentIndex - 1);
 			this.render();
 		},
 		down: function (e) {
-			console.log('down button pressed');
+			var currentIndex = this.getIndexFromEl(e.target);
+			if (this.todos[currentIndex + 1] == null)
+					return;
+			// var templateTodo = $.extend({}, this.todos[currentIndex]);
+			// this.todos[currentIndex] = this.todos[currentIndex + 1];
+			// this.todos[currentIndex + 1] = templateTodo;
+			this.switchTodoByIndex(currentIndex, currentIndex + 1);
 			this.render();
 		}
 	};
