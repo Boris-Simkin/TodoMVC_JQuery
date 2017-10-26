@@ -28,6 +28,7 @@ jQuery(function ($) {
 		pluralize: function (count, word) {
 			return count === 1 ? word : word + 's';
 		},
+
 		store: function (namespace, data) {
 			if (arguments.length > 1) {
 				//Replaced localStorage with cookie storage
@@ -59,6 +60,8 @@ jQuery(function ($) {
 			$('#new-todo').on('keyup', this.create.bind(this));
 			$('#toggle-all').on('change', this.toggleAll.bind(this));
 			$('#footer').on('click', '#clear-completed', this.destroyCompleted.bind(this));
+			//Undo feature
+			$('#footer').on('click', '#undo', this.undo.bind(this));
 			$('#todo-list')
 				.on('change', '.toggle', this.toggle.bind(this))
 				.on('dblclick', 'label', this.editingMode.bind(this))
@@ -68,6 +71,7 @@ jQuery(function ($) {
 				//My bindings
 				.on('click', '.up', this.up.bind(this))
 				.on('click', '.down', this.down.bind(this));
+				
 		},
 		render: function () {
 			var todos = this.getFilteredTodos();
@@ -139,6 +143,7 @@ jQuery(function ($) {
 			}
 		},
 		create: function (e) {
+			util.store('temp-todos', this.todos);
 			var $input = $(e.target);
 			var val = $input.val().trim();
 
@@ -157,11 +162,13 @@ jQuery(function ($) {
 			this.render();
 		},
 		toggle: function (e) {
+			util.store('temp-todos', this.todos);
 			var i = this.getIndexFromEl(e.target);
 			this.todos[i].completed = !this.todos[i].completed;
 			this.render();
 		},
 		editingMode: function (e) {
+			util.store('temp-todos', this.todos);
 			var $input = $(e.target).closest('li').addClass('editing').find('.edit');
 			var val = $input.val();
 			$input.val('').focus().val(val);
@@ -194,6 +201,7 @@ jQuery(function ($) {
 			this.render();
 		},
 		destroy: function (e) {
+			util.store('temp-todos', this.todos);
 			this.todos.splice(this.getIndexFromEl(e.target), 1);
 			this.render();
 		},
@@ -206,9 +214,7 @@ jQuery(function ($) {
 			var currentIndex = this.getIndexFromEl(e.target);
 			if (this.todos[currentIndex - 1] == null)
 					return;
-			// var templateTodo = $.extend({}, this.todos[currentIndex]);
-			// this.todos[currentIndex] = this.todos[currentIndex - 1];
-			// this.todos[currentIndex - 1] = templateTodo;
+			util.store('temp-todos', this.todos);
 			this.switchTodoByIndex(currentIndex, currentIndex - 1);
 			this.render();
 		},
@@ -216,11 +222,14 @@ jQuery(function ($) {
 			var currentIndex = this.getIndexFromEl(e.target);
 			if (this.todos[currentIndex + 1] == null)
 					return;
-			// var templateTodo = $.extend({}, this.todos[currentIndex]);
-			// this.todos[currentIndex] = this.todos[currentIndex + 1];
-			// this.todos[currentIndex + 1] = templateTodo;
+			util.store('temp-todos', this.todos);
 			this.switchTodoByIndex(currentIndex, currentIndex + 1);
 			this.render();
+		},
+		undo: function (e) {
+			this.todos = util.store('temp-todos');
+			this.render();
+			$('#undo').addClass("disabled");
 		}
 	};
 
