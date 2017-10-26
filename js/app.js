@@ -64,7 +64,10 @@ jQuery(function ($) {
 				.on('dblclick', 'label', this.editingMode.bind(this))
 				.on('keyup', '.edit', this.editKeyup.bind(this))
 				.on('focusout', '.edit', this.update.bind(this))
-				.on('click', '.destroy', this.destroy.bind(this));
+				.on('click', '.destroy', this.destroy.bind(this))
+				//My bindings
+				.on('click', '.up', this.up.bind(this))
+				.on('click', '.down', this.down.bind(this));
 		},
 		render: function () {
 			var todos = this.getFilteredTodos();
@@ -192,6 +195,14 @@ jQuery(function ($) {
 		},
 		destroy: function (e) {
 			this.todos.splice(this.getIndexFromEl(e.target), 1);
+			this.render();
+		},
+		up: function (e) {
+			console.log('up button pressed');
+			this.render();
+		},
+		down: function (e) {
+			console.log('down button pressed');
 			this.render();
 		}
 	};
